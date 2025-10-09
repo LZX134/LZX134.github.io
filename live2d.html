@@ -381,8 +381,8 @@
                 // 显示加载状态
                 loadingText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载模型文件...';
                 
-                // 加载Live2D模型 - 路径指向玛丽偶像_vts文件夹
-                const modelUrl = '玛丽偶像_vts/玛丽公开模型.model3.json';
+                // 加载Live2D模型 - 路径直接指向当前目录下的模型文件
+                const modelUrl = '玛丽公开模型.model3.json';
                 const model = await PIXI.live2d.Live2DModel.from(modelUrl);
                 
                 // 隐藏加载文本
@@ -488,7 +488,7 @@
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
                         <p>模型加载失败</p>
                         <p style="font-size: 0.8rem; margin-top: 10px;">错误: ${error.message}</p>
-                        <p style="font-size: 0.8rem; margin-top: 10px;">请检查模型文件路径是否正确</p>
+                        <p style="font-size: 0.8rem; margin-top: 10px;">请检查模型文件是否在同一目录下</p>
                     </div>
                 `;
             }

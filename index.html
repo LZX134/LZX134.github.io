@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>风也曾辉煌过 - 个人博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -34,14 +34,14 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: none; /* 默认隐藏，通过JS控制显示 */
+            display: none;
         }
         
         #opening-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: none; /* 默认隐藏，通过JS控制显示 */
+            display: none;
         }
         
         .loading-overlay {
@@ -79,15 +79,20 @@
             background: rgba(255, 255, 255, 0.2);
             color: #fff;
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 12px 20px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: all 0.3s;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .skip-btn:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
         
         @keyframes fadeIn {
@@ -876,11 +881,47 @@
             .essay-media img, .essay-media video {
                 max-height: 250px;
             }
+            
+            /* 移动设备跳过按钮样式 */
+            .skip-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 14px 24px;
+                font-size: 1.1rem;
+                background: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            }
+            
+            .loading-text {
+                font-size: 2rem;
+            }
+            
+            .loading-subtext {
+                font-size: 1.1rem;
+            }
         }
         
         @media (min-width: 769px) {
             .mobile-nav-links {
                 display: none !important;
+            }
+        }
+        
+        /* 针对非常小的屏幕优化 */
+        @media (max-width: 480px) {
+            .skip-btn {
+                bottom: 15px;
+                right: 15px;
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            
+            .loading-text {
+                font-size: 1.8rem;
+            }
+            
+            .loading-subtext {
+                font-size: 1rem;
             }
         }
     </style>
@@ -1142,6 +1183,9 @@
             const skipBtn = document.getElementById('skip-btn');
             const mainContent = document.getElementById('main-content');
             
+            // 确保跳过按钮可见
+            skipBtn.style.display = 'block';
+            
             // 跳过开场动画
             skipBtn.addEventListener('click', function() {
                 finishOpeningAnimation();
@@ -1175,6 +1219,9 @@
             function fallbackToImage() {
                 openingVideo.style.display = 'none';
                 openingImage.style.display = 'block';
+                
+                // 确保跳过按钮可见
+                skipBtn.style.display = 'block';
                 
                 // 3秒后自动进入主页面
                 setTimeout(() => {

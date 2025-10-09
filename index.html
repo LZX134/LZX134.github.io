@@ -34,6 +34,14 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: none; /* 默认隐藏，通过JS控制显示 */
+        }
+        
+        #opening-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* 默认隐藏，通过JS控制显示 */
         }
         
         .loading-overlay {
@@ -248,6 +256,8 @@
         
         .profile-info {
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .profile-info h1 {
@@ -265,6 +275,83 @@
         .profile-info p {
             margin-bottom: 20px;
             max-width: 500px;
+        }
+        
+        /* 时钟样式 */
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-left: 30px;
+            min-width: 280px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .clock-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #FFD700;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .clock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .date-display {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #ddd;
+            text-align: center;
+        }
+        
+        .time-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #FFD700;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .time-segment {
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .time-separator {
+            margin: 0 5px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .timezone {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
         }
         
         .tags-section {
@@ -741,6 +828,13 @@
                 align-self: center;
             }
             
+            .clock-container {
+                margin-left: 0;
+                margin-top: 20px;
+                min-width: auto;
+                width: 100%;
+            }
+            
             .nav-links {
                 display: none;
             }
@@ -795,10 +889,11 @@
     <!-- 开场动画 -->
     <div id="loading-screen">
         <div class="loading-content">
-            <video autoplay muted id="opening-video">
+            <video muted playsinline id="opening-video">
                 <source src="opening-animation.mp4" type="video/mp4">
                 您的浏览器不支持视频播放
             </video>
+            <img id="opening-image" src="image2.jpg" alt="开场图片">
             <div class="loading-overlay">
                 <div class="loading-text">风也曾辉煌过</div>
                 <div class="loading-subtext">与你的日常，就是奇迹</div>
@@ -862,6 +957,22 @@
                         <div class="tag">欧皇</div>
                         <div class="tag">碧蓝档案</div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- 北京时间时钟 -->
+            <div class="clock-container">
+                <div class="clock-title">北京时间</div>
+                <div class="clock">
+                    <div class="date-display" id="date-display">2023年10月1日 星期日</div>
+                    <div class="time-display" id="time-display">
+                        <span class="time-segment" id="hours">00</span>
+                        <span class="time-separator">:</span>
+                        <span class="time-segment" id="minutes">00</span>
+                        <span class="time-separator">:</span>
+                        <span class="time-segment" id="seconds">00</span>
+                    </div>
+                    <div class="timezone">UTC+8 中国标准时间</div>
                 </div>
             </div>
         </section>
@@ -1027,6 +1138,7 @@
         function startOpeningAnimation() {
             const loadingScreen = document.getElementById('loading-screen');
             const openingVideo = document.getElementById('opening-video');
+            const openingImage = document.getElementById('opening-image');
             const skipBtn = document.getElementById('skip-btn');
             const mainContent = document.getElementById('main-content');
             
@@ -1035,15 +1147,45 @@
                 finishOpeningAnimation();
             });
             
-            // 视频播放结束后自动进入主页面
-            openingVideo.addEventListener('ended', function() {
-                finishOpeningAnimation();
-            });
+            // 尝试播放视频
+            function tryPlayVideo() {
+                // 先尝试播放视频
+                const playPromise = openingVideo.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // 视频播放成功
+                        console.log('视频播放成功');
+                        openingVideo.style.display = 'block';
+                        openingImage.style.display = 'none';
+                        
+                        // 视频播放结束后自动进入主页面
+                        openingVideo.addEventListener('ended', function() {
+                            finishOpeningAnimation();
+                        });
+                    }).catch(error => {
+                        // 视频播放失败，显示图片
+                        console.log('视频播放失败，使用图片替代:', error);
+                        fallbackToImage();
+                    });
+                }
+            }
             
-            // 如果视频加载失败，直接进入主页面
+            // 备用图片方案
+            function fallbackToImage() {
+                openingVideo.style.display = 'none';
+                openingImage.style.display = 'block';
+                
+                // 3秒后自动进入主页面
+                setTimeout(() => {
+                    finishOpeningAnimation();
+                }, 3000);
+            }
+            
+            // 如果视频加载失败，直接使用图片
             openingVideo.addEventListener('error', function() {
-                console.log('开场动画视频加载失败，直接进入主页面');
-                finishOpeningAnimation();
+                console.log('开场动画视频加载失败，使用图片替代');
+                fallbackToImage();
             });
             
             function finishOpeningAnimation() {
@@ -1056,6 +1198,9 @@
                 // 初始化页面功能
                 initializePage();
             }
+            
+            // 开始尝试播放
+            tryPlayVideo();
         }
         
         // 初始化页面功能
@@ -1063,6 +1208,7 @@
             loadBackground();
             loadAvatar();
             trackVisitor();
+            startClock();
             
             setupMobileMenu();
             setupLoginSystem();
@@ -1100,6 +1246,45 @@
                     el.style.transform = 'translateY(0)';
                 }, 300 + index * 200);
             });
+        }
+        
+        // 北京时间时钟功能
+        function startClock() {
+            function updateClock() {
+                const now = new Date();
+                
+                // 转换为北京时间 (UTC+8)
+                const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+                
+                // 获取日期信息
+                const year = beijingTime.getUTCFullYear();
+                const month = beijingTime.getUTCMonth() + 1;
+                const date = beijingTime.getUTCDate();
+                const day = beijingTime.getUTCDay();
+                
+                // 获取时间信息
+                const hours = beijingTime.getUTCHours().toString().padStart(2, '0');
+                const minutes = beijingTime.getUTCMinutes().toString().padStart(2, '0');
+                const seconds = beijingTime.getUTCSeconds().toString().padStart(2, '0');
+                
+                // 星期几
+                const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                const weekday = weekdays[day];
+                
+                // 更新日期显示
+                document.getElementById('date-display').textContent = `${year}年${month}月${date}日 ${weekday}`;
+                
+                // 更新时间显示
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+            }
+            
+            // 立即更新一次
+            updateClock();
+            
+            // 每秒更新一次
+            setInterval(updateClock, 1000);
         }
         
         // 图片加载函数

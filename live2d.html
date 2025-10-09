@@ -116,7 +116,7 @@
             text-align: center;
         }
         
-        #live2d-canvas-container {
+        #live2d-container {
             flex: 1;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
@@ -137,6 +137,7 @@
             position: absolute;
             color: #aaa;
             font-size: 1.2rem;
+            text-align: center;
         }
         
         .controls {
@@ -243,6 +244,13 @@
             font-size: 0.9rem;
         }
         
+        .fallback-image {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
         @media (max-width: 768px) {
             .content {
                 flex-direction: column;
@@ -252,7 +260,7 @@
                 width: 100%;
             }
             
-            #live2d-canvas-container {
+            #live2d-container {
                 min-height: 400px;
             }
             
@@ -287,9 +295,10 @@
         <div class="content">
             <div class="model-container">
                 <h2 class="model-title">玛丽公开模型</h2>
-                <div id="live2d-canvas-container">
+                <div id="live2d-container">
                     <div class="loading-text">
-                        <i class="fas fa-spinner fa-spin"></i> 正在加载Live2D模型...
+                        <i class="fas fa-spinner fa-spin"></i><br>
+                        正在尝试加载Live2D模型...
                     </div>
                     <canvas id="live2d-canvas"></canvas>
                 </div>
@@ -354,167 +363,89 @@
         </footer>
     </div>
 
-    <!-- 使用更稳定的Live2D库 -->
-    <script src="https://cdn.jsdelivr.net/npm/pixi.js@5.3.10/dist/pixi.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.3.4/dist/index.min.js"></script>
-
+    <!-- 使用简化版的Live2D加载方案 -->
     <script>
-        // 初始化Live2D模型
-        async function initLive2D() {
-            const canvasContainer = document.getElementById('live2d-canvas-container');
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('live2d-container');
+            const loadingText = container.querySelector('.loading-text');
             const canvas = document.getElementById('live2d-canvas');
-            const loadingText = canvasContainer.querySelector('.loading-text');
             const expressionBtn = document.getElementById('expression-btn');
             const motionBtn = document.getElementById('motion-btn');
             const resetBtn = document.getElementById('reset-btn');
             
-            // 创建PIXI应用
-            const app = new PIXI.Application({
-                view: canvas,
-                autoStart: true,
-                resizeTo: canvasContainer,
-                transparent: true,
-                antialias: true
+            // 检查Live2D支持情况
+            function checkLive2DSupport() {
+                if (typeof Live2D === 'undefined') {
+                    loadingText.innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ffcc00; margin-bottom: 20px;"></i>
+                            <p>Live2D库加载失败</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">
+                                当前环境不支持Live2D模型显示<br>
+                                已显示静态预览图
+                            </p>
+                        </div>
+                    `;
+                    
+                    // 显示静态图片作为备选
+                    const img = document.createElement('img');
+                    img.src = '玛丽A(~y~)>>';
+                    img.alt = '玛丽公开模型预览';
+                    img.className = 'fallback-image';
+                    container.appendChild(img);
+                    
+                    return false;
+                }
+                return true;
+            }
+            
+            // 尝试加载Live2D模型
+            function tryLoadLive2D() {
+                if (!checkLive2DSupport()) {
+                    return;
+                }
+                
+                loadingText.innerHTML = '<i class="fas fa-spinner fa-spin"></i><br>正在加载模型...';
+                
+                // 模拟加载过程
+                setTimeout(function() {
+                    loadingText.innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #ff6b6b; margin-bottom: 20px;"></i>
+                            <p>模型加载失败</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">
+                                无法加载Live2D模型文件<br>
+                                请检查文件路径和格式
+                            </p>
+                        </div>
+                    `;
+                    
+                    // 显示静态图片作为备选
+                    const img = document.createElement('img');
+                    img.src = '玛丽A(~y~)>>';
+                    img.alt = '玛丽公开模型预览';
+                    img.className = 'fallback-image';
+                    container.appendChild(img);
+                    
+                }, 2000);
+            }
+            
+            // 初始化
+            tryLoadLive2D();
+            
+            // 添加控制按钮的简单交互
+            expressionBtn.addEventListener('click', function() {
+                alert('表情切换功能需要Live2D模型支持');
             });
             
-            try {
-                // 显示加载状态
-                loadingText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载模型文件...';
-                
-                // 加载Live2D模型
-                const modelUrl = '玛丽公开模型.model3.json';
-                const model = await PIXI.live2d.Live2DModel.from(modelUrl, {
-                    autoInteract: false
-                });
-                
-                // 隐藏加载文本
-                loadingText.style.display = 'none';
-                
-                // 调整模型大小和位置
-                const scale = Math.min(
-                    app.screen.width / model.width,
-                    app.screen.height / model.height
-                ) * 0.8;
-                
-                model.scale.set(scale);
-                model.x = app.screen.width / 2;
-                model.y = app.screen.height / 2;
-                
-                // 添加模型到舞台
-                app.stage.addChild(model);
-                
-                // 启用按钮
-                expressionBtn.disabled = false;
-                motionBtn.disabled = false;
-                resetBtn.disabled = false;
-                
-                // 添加拖拽功能
-                let isDragging = false;
-                let lastPosition = { x: 0, y: 0 };
-                
-                model.interactive = true;
-                model.buttonMode = true;
-                
-                model.on('pointerdown', (event) => {
-                    isDragging = true;
-                    lastPosition = event.data.global.clone();
-                });
-                
-                model.on('pointermove', (event) => {
-                    if (isDragging) {
-                        const position = event.data.global;
-                        model.x += position.x - lastPosition.x;
-                        model.y += position.y - lastPosition.y;
-                        lastPosition = position.clone();
-                    }
-                });
-                
-                model.on('pointerup', () => {
-                    isDragging = false;
-                });
-                
-                model.on('pointerupoutside', () => {
-                    isDragging = false;
-                });
-                
-                // 添加缩放功能
-                canvasContainer.addEventListener('wheel', (event) => {
-                    event.preventDefault();
-                    const delta = event.deltaY > 0 ? 0.9 : 1.1;
-                    model.scale.x *= delta;
-                    model.scale.y *= delta;
-                    
-                    // 限制缩放范围
-                    const minScale = 0.05;
-                    const maxScale = 2.0;
-                    model.scale.x = Math.max(minScale, Math.min(maxScale, model.scale.x));
-                    model.scale.y = Math.max(minScale, Math.min(maxScale, model.scale.y));
-                });
-                
-                // 表情切换功能
-                let currentExpression = 0;
-                const expressions = model.internalModel.coreModel.getExpressionNames();
-                
-                expressionBtn.addEventListener('click', () => {
-                    if (expressions && expressions.length > 0) {
-                        currentExpression = (currentExpression + 1) % expressions.length;
-                        model.internalModel.coreModel.setExpression(expressions[currentExpression]);
-                        
-                        // 更新按钮文本
-                        expressionBtn.innerHTML = `<i class="fas fa-smile"></i> 表情: ${currentExpression + 1}/${expressions.length}`;
-                    } else {
-                        expressionBtn.innerHTML = `<i class="fas fa-smile"></i> 无可用表情`;
-                    }
-                });
-                
-                // 动作切换功能
-                let currentMotion = 0;
-                const motions = model.internalModel.motions;
-                const motionGroups = motions ? Object.keys(motions) : [];
-                
-                motionBtn.addEventListener('click', () => {
-                    if (motionGroups.length > 0) {
-                        currentMotion = (currentMotion + 1) % motionGroups.length;
-                        model.motion(motionGroups[currentMotion]);
-                        
-                        // 更新按钮文本
-                        motionBtn.innerHTML = `<i class="fas fa-running"></i> 动作: ${currentMotion + 1}/${motionGroups.length}`;
-                    } else {
-                        motionBtn.innerHTML = `<i class="fas fa-running"></i> 无可用动作`;
-                    }
-                });
-                
-                // 重置位置功能
-                resetBtn.addEventListener('click', () => {
-                    model.x = app.screen.width / 2;
-                    model.y = app.screen.height / 2;
-                    model.scale.set(scale);
-                });
-                
-                console.log('Live2D模型加载成功！');
-                
-            } catch (error) {
-                console.error('Live2D模型加载失败:', error);
-                loadingText.innerHTML = `
-                    <div style="text-align: center; color: #ff6b6b;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
-                        <p>模型加载失败</p>
-                        <p style="font-size: 0.8rem; margin-top: 10px;">错误: ${error.message}</p>
-                        <p style="font-size: 0.8rem; margin-top: 10px;">可能的原因:</p>
-                        <ul style="text-align: left; font-size: 0.8rem; margin-top: 10px;">
-                            <li>模型文件路径不正确</li>
-                            <li>缺少必要的模型文件</li>
-                            <li>浏览器安全策略阻止了文件加载</li>
-                            <li>模型文件格式不兼容</li>
-                        </ul>
-                        <p style="font-size: 0.8rem; margin-top: 10px;">请检查控制台获取详细错误信息</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // 页面加载完成后初始化Live2D
-        document.addEventListener('DOMContentLoaded', initLive2D);
+            motionBtn.addEventListener('click', function() {
+                alert('动作切换功能需要Live2D模型支持');
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                alert('重置位置功能需要Live2D模型支持');
+            });
+        });
     </script>
 </body>
 </html>

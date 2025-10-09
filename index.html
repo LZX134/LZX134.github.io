@@ -76,7 +76,7 @@
             position: absolute;
             bottom: 30px;
             right: 30px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.3);
             color: #fff;
             border: none;
             padding: 12px 20px;
@@ -88,16 +88,102 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
         }
         
         .skip-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .play-btn {
+            position: absolute;
+            bottom: 80px;
+            right: 30px;
+            background: rgba(255, 215, 0, 0.6);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+        }
+        
+        .play-btn:hover {
+            background: rgba(255, 215, 0, 0.8);
             transform: translateY(-2px);
         }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 壁纸选择器样式 */
+        .wallpaper-selector {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 200px;
+        }
+        
+        .wallpaper-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        .wallpaper-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .wallpaper-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .wallpaper-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .wallpaper-option.active {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+        
+        .wallpaper-preview {
+            width: 40px;
+            height: 25px;
+            border-radius: 3px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .wallpaper-name {
+            font-size: 0.9rem;
+            color: #ddd;
         }
         
         /* 原有样式保持不变 */
@@ -125,6 +211,7 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            transition: background-image 1s ease;
         }
         
         .overlay {
@@ -888,8 +975,15 @@
                 right: 20px;
                 padding: 14px 24px;
                 font-size: 1.1rem;
-                background: rgba(255, 255, 255, 0.3);
+                background: rgba(255, 255, 255, 0.4);
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            }
+            
+            .play-btn {
+                bottom: 80px;
+                right: 20px;
+                padding: 14px 24px;
+                font-size: 1.1rem;
             }
             
             .loading-text {
@@ -898,6 +992,12 @@
             
             .loading-subtext {
                 font-size: 1.1rem;
+            }
+            
+            .wallpaper-selector {
+                top: 80px;
+                right: 10px;
+                max-width: 180px;
             }
         }
         
@@ -916,12 +1016,25 @@
                 font-size: 1rem;
             }
             
+            .play-btn {
+                bottom: 70px;
+                right: 15px;
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            
             .loading-text {
                 font-size: 1.8rem;
             }
             
             .loading-subtext {
                 font-size: 1rem;
+            }
+            
+            .wallpaper-selector {
+                top: 70px;
+                right: 5px;
+                max-width: 160px;
             }
         }
     </style>
@@ -930,6 +1043,7 @@
     <!-- 开场动画 -->
     <div id="loading-screen">
         <div class="loading-content">
+            <!-- 移除视频自动播放，改为用户交互后播放 -->
             <video muted playsinline id="opening-video">
                 <source src="opening-animation.mp4" type="video/mp4">
                 您的浏览器不支持视频播放
@@ -939,7 +1053,17 @@
                 <div class="loading-text">风也曾辉煌过</div>
                 <div class="loading-subtext">与你的日常，就是奇迹</div>
                 <button class="skip-btn" id="skip-btn">跳过开场</button>
+                <!-- 添加播放按钮 -->
+                <button class="play-btn" id="play-btn">播放动画</button>
             </div>
+        </div>
+    </div>
+    
+    <!-- 壁纸选择器 -->
+    <div class="wallpaper-selector">
+        <div class="wallpaper-title">壁纸选择</div>
+        <div class="wallpaper-options" id="wallpaper-options">
+            <!-- 壁纸选项将通过JavaScript动态添加 -->
         </div>
     </div>
     
@@ -1181,14 +1305,29 @@
             const openingVideo = document.getElementById('opening-video');
             const openingImage = document.getElementById('opening-image');
             const skipBtn = document.getElementById('skip-btn');
+            const playBtn = document.getElementById('play-btn');
             const mainContent = document.getElementById('main-content');
             
             // 确保跳过按钮可见
             skipBtn.style.display = 'block';
+            playBtn.style.display = 'block';
             
             // 跳过开场动画
             skipBtn.addEventListener('click', function() {
                 finishOpeningAnimation();
+            });
+            
+            // 播放开场动画
+            playBtn.addEventListener('click', function() {
+                playBtn.style.display = 'none';
+                skipBtn.style.display = 'none';
+                
+                // 隐藏文字
+                document.querySelector('.loading-text').style.display = 'none';
+                document.querySelector('.loading-subtext').style.display = 'none';
+                
+                // 尝试播放视频
+                tryPlayVideo();
             });
             
             // 尝试播放视频
@@ -1246,8 +1385,90 @@
                 initializePage();
             }
             
-            // 开始尝试播放
-            tryPlayVideo();
+            // 初始显示播放按钮，不自动播放
+            playBtn.style.display = 'block';
+            skipBtn.style.display = 'block';
+        }
+        
+        // 壁纸管理功能
+        function setupWallpaperManager() {
+            const wallpapers = [
+                { id: 'default', name: '默认背景', url: 'image2.jpg' },
+                { id: 'wallpaper1', name: '星空之夜', url: 'wallpaper1.jpg' },
+                { id: 'wallpaper2', name: '山间晨雾', url: 'wallpaper2.jpg' },
+                { id: 'wallpaper3', name: '城市灯火', url: 'wallpaper3.jpg' },
+                { id: 'wallpaper4', name: '海洋深处', url: 'wallpaper4.jpg' }
+            ];
+            
+            const wallpaperOptions = document.getElementById('wallpaper-options');
+            const bgContainer = document.getElementById('background-container');
+            
+            // 渲染壁纸选项
+            function renderWallpaperOptions() {
+                wallpaperOptions.innerHTML = '';
+                
+                wallpapers.forEach(wallpaper => {
+                    const option = document.createElement('div');
+                    option.className = 'wallpaper-option';
+                    option.dataset.id = wallpaper.id;
+                    
+                    option.innerHTML = `
+                        <div class="wallpaper-preview" style="background-image: url('${wallpaper.url}')"></div>
+                        <div class="wallpaper-name">${wallpaper.name}</div>
+                    `;
+                    
+                    option.addEventListener('click', () => {
+                        selectWallpaper(wallpaper.id);
+                    });
+                    
+                    wallpaperOptions.appendChild(option);
+                });
+            }
+            
+            // 选择壁纸
+            function selectWallpaper(id) {
+                const selectedWallpaper = wallpapers.find(w => w.id === id);
+                if (!selectedWallpaper) return;
+                
+                // 更新背景
+                bgContainer.style.backgroundImage = `url('${selectedWallpaper.url}')`;
+                
+                // 更新活跃状态
+                document.querySelectorAll('.wallpaper-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                document.querySelector(`.wallpaper-option[data-id="${id}"]`).classList.add('active');
+                
+                // 保存到本地存储
+                localStorage.setItem('selected-wallpaper', id);
+            }
+            
+            // 随机切换壁纸
+            function randomWallpaper() {
+                const randomIndex = Math.floor(Math.random() * wallpapers.length);
+                selectWallpaper(wallpapers[randomIndex].id);
+            }
+            
+            // 初始化壁纸
+            function initWallpaper() {
+                // 检查是否有保存的壁纸
+                const savedWallpaper = localStorage.getItem('selected-wallpaper');
+                
+                // 30%概率随机切换壁纸
+                if (!savedWallpaper && Math.random() < 0.3) {
+                    randomWallpaper();
+                } else if (savedWallpaper) {
+                    // 使用保存的壁纸
+                    selectWallpaper(savedWallpaper);
+                } else {
+                    // 使用默认壁纸
+                    selectWallpaper('default');
+                }
+            }
+            
+            // 初始化
+            renderWallpaperOptions();
+            initWallpaper();
         }
         
         // 初始化页面功能
@@ -1256,6 +1477,7 @@
             loadAvatar();
             trackVisitor();
             startClock();
+            setupWallpaperManager();
             
             setupMobileMenu();
             setupLoginSystem();
@@ -1350,18 +1572,8 @@
         }
 
         function loadBackground() {
-            const bgContainer = document.getElementById('background-container');
-            
-            loadImage(bgContainer, 'image2.jpg', '背景图片', 
-                function() {
-                    console.log('背景图片加载成功');
-                },
-                function() {
-                    console.log('背景图片加载失败，使用默认背景');
-                    bgContainer.style.backgroundColor = '#1a1a2e';
-                    bgContainer.style.backgroundImage = 'none';
-                }
-            );
+            // 背景现在由壁纸管理器处理
+            console.log('背景加载由壁纸管理器处理');
         }
 
         function loadAvatar() {

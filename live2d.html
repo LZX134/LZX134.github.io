@@ -354,9 +354,9 @@
         </footer>
     </div>
 
-    <!-- 引入Live2D相关库 -->
-    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.8/dist/browser/pixi.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.2/dist/index.min.js"></script>
+    <!-- 使用更稳定的Live2D库 -->
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@5.3.10/dist/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.3.4/dist/index.min.js"></script>
 
     <script>
         // 初始化Live2D模型
@@ -373,23 +373,29 @@
                 view: canvas,
                 autoStart: true,
                 resizeTo: canvasContainer,
-                backgroundColor: 0x000000,
-                backgroundAlpha: 0
+                transparent: true,
+                antialias: true
             });
             
             try {
                 // 显示加载状态
                 loadingText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载模型文件...';
                 
-                // 加载Live2D模型 - 路径直接指向当前目录下的模型文件
+                // 加载Live2D模型
                 const modelUrl = '玛丽公开模型.model3.json';
-                const model = await PIXI.live2d.Live2DModel.from(modelUrl);
+                const model = await PIXI.live2d.Live2DModel.from(modelUrl, {
+                    autoInteract: false
+                });
                 
                 // 隐藏加载文本
                 loadingText.style.display = 'none';
                 
                 // 调整模型大小和位置
-                const scale = 0.15;
+                const scale = Math.min(
+                    app.screen.width / model.width,
+                    app.screen.height / model.height
+                ) * 0.8;
+                
                 model.scale.set(scale);
                 model.x = app.screen.width / 2;
                 model.y = app.screen.height / 2;
@@ -407,6 +413,8 @@
                 let lastPosition = { x: 0, y: 0 };
                 
                 model.interactive = true;
+                model.buttonMode = true;
+                
                 model.on('pointerdown', (event) => {
                     isDragging = true;
                     lastPosition = event.data.global.clone();
@@ -438,7 +446,7 @@
                     
                     // 限制缩放范围
                     const minScale = 0.05;
-                    const maxScale = 0.5;
+                    const maxScale = 2.0;
                     model.scale.x = Math.max(minScale, Math.min(maxScale, model.scale.x));
                     model.scale.y = Math.max(minScale, Math.min(maxScale, model.scale.y));
                 });
@@ -448,12 +456,14 @@
                 const expressions = model.internalModel.coreModel.getExpressionNames();
                 
                 expressionBtn.addEventListener('click', () => {
-                    if (expressions.length > 0) {
+                    if (expressions && expressions.length > 0) {
                         currentExpression = (currentExpression + 1) % expressions.length;
                         model.internalModel.coreModel.setExpression(expressions[currentExpression]);
                         
                         // 更新按钮文本
                         expressionBtn.innerHTML = `<i class="fas fa-smile"></i> 表情: ${currentExpression + 1}/${expressions.length}`;
+                    } else {
+                        expressionBtn.innerHTML = `<i class="fas fa-smile"></i> 无可用表情`;
                     }
                 });
                 
@@ -469,6 +479,8 @@
                         
                         // 更新按钮文本
                         motionBtn.innerHTML = `<i class="fas fa-running"></i> 动作: ${currentMotion + 1}/${motionGroups.length}`;
+                    } else {
+                        motionBtn.innerHTML = `<i class="fas fa-running"></i> 无可用动作`;
                     }
                 });
                 
@@ -488,7 +500,14 @@
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
                         <p>模型加载失败</p>
                         <p style="font-size: 0.8rem; margin-top: 10px;">错误: ${error.message}</p>
-                        <p style="font-size: 0.8rem; margin-top: 10px;">请检查模型文件是否在同一目录下</p>
+                        <p style="font-size: 0.8rem; margin-top: 10px;">可能的原因:</p>
+                        <ul style="text-align: left; font-size: 0.8rem; margin-top: 10px;">
+                            <li>模型文件路径不正确</li>
+                            <li>缺少必要的模型文件</li>
+                            <li>浏览器安全策略阻止了文件加载</li>
+                            <li>模型文件格式不兼容</li>
+                        </ul>
+                        <p style="font-size: 0.8rem; margin-top: 10px;">请检查控制台获取详细错误信息</p>
                     </div>
                 `;
             }

@@ -4,8 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>风也曾辉煌过 - 个人博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 引入外部CSS -->
     <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 基础样式 */
+        body {
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-color: #0f1419;
+        }
+
         /* 开场动画样式 */
         #loading-screen {
             position: fixed;
@@ -21,7 +38,7 @@
             z-index: 9999;
             transition: opacity 1s ease, visibility 1s ease;
         }
-        
+
         .loading-content {
             text-align: center;
             color: #fff;
@@ -29,21 +46,21 @@
             width: 100%;
             height: 100%;
         }
-        
+
         #opening-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: none;
         }
-        
+
         #opening-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: none;
         }
-        
+
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -56,7 +73,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .loading-text {
             font-size: 2.5rem;
             margin-bottom: 10px;
@@ -64,14 +81,14 @@
             opacity: 0;
             animation: fadeIn 1.5s ease forwards 0.5s;
         }
-        
+
         .loading-subtext {
             font-size: 1.2rem;
             color: #fff;
             opacity: 0;
             animation: fadeIn 1.5s ease forwards 1s;
         }
-        
+
         .skip-btn {
             position: absolute;
             bottom: 30px;
@@ -90,12 +107,12 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             font-weight: bold;
         }
-        
+
         .skip-btn:hover {
             background: rgba(255, 255, 255, 0.4);
             transform: translateY(-2px);
         }
-        
+
         .play-btn {
             position: absolute;
             bottom: 80px;
@@ -114,17 +131,17 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             font-weight: bold;
         }
-        
+
         .play-btn:hover {
             background: rgba(255, 215, 0, 0.8);
             transform: translateY(-2px);
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         /* 壁纸选择器样式 */
         .wallpaper-selector {
             position: fixed;
@@ -139,20 +156,20 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             max-width: 200px;
         }
-        
+
         .wallpaper-title {
             font-size: 1rem;
             margin-bottom: 10px;
             color: #FFD700;
             text-align: center;
         }
-        
+
         .wallpaper-options {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .wallpaper-option {
             display: flex;
             align-items: center;
@@ -162,16 +179,16 @@
             border-radius: 5px;
             transition: all 0.3s;
         }
-        
+
         .wallpaper-option:hover {
             background: rgba(255, 255, 255, 0.1);
         }
-        
+
         .wallpaper-option.active {
             background: rgba(255, 215, 0, 0.2);
             border: 1px solid rgba(255, 215, 0, 0.4);
         }
-        
+
         .wallpaper-preview {
             width: 40px;
             height: 25px;
@@ -180,27 +197,13 @@
             background-position: center;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        
+
         .wallpaper-name {
             font-size: 0.9rem;
             color: #ddd;
         }
-        
-        /* 原有样式保持不变 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            color: #fff;
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-color: #0f1419;
-        }
-        
+
+        /* 背景容器 */
         .background-container {
             position: fixed;
             top: 0;
@@ -213,7 +216,7 @@
             background-attachment: fixed;
             transition: background-image 1s ease;
         }
-        
+
         .overlay {
             position: absolute;
             top: 0;
@@ -222,7 +225,8 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
         }
-        
+
+        /* 主容器 */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -231,7 +235,8 @@
             transform: translateY(20px);
             transition: opacity 1s ease, transform 1s ease;
         }
-        
+
+        /* 导航栏样式 */
         nav {
             display: flex;
             justify-content: space-between;
@@ -239,24 +244,24 @@
             padding: 20px 0;
             margin-bottom: 40px;
         }
-        
+
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
             display: flex;
             align-items: center;
         }
-        
+
         .logo i {
             margin-right: 10px;
             color: #FFD700;
         }
-        
+
         .nav-links {
             display: flex;
             gap: 30px;
         }
-        
+
         .nav-links a {
             color: #fff;
             text-decoration: none;
@@ -265,13 +270,13 @@
             padding: 8px 15px;
             border-radius: 5px;
         }
-        
+
         .nav-links a:hover {
             color: #FFD700;
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
         }
-        
+
         .mobile-menu-toggle {
             display: none;
             background: none;
@@ -280,7 +285,7 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
-        
+
         .mobile-nav-links {
             display: none;
             flex-direction: column;
@@ -291,11 +296,11 @@
             backdrop-filter: blur(10px);
             border-radius: 10px;
         }
-        
+
         .mobile-nav-links.active {
             display: flex;
         }
-        
+
         .mobile-nav-links a {
             color: #fff;
             text-decoration: none;
@@ -303,11 +308,12 @@
             border-radius: 5px;
             transition: all 0.3s;
         }
-        
+
         .mobile-nav-links a:hover {
             background: rgba(255, 255, 255, 0.1);
         }
-        
+
+        /* 个人资料区域样式 */
         .profile-section {
             display: flex;
             margin-bottom: 50px;
@@ -317,7 +323,7 @@
             padding: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
-        
+
         .avatar {
             width: 150px;
             height: 150px;
@@ -334,41 +340,41 @@
             text-align: center;
             flex-shrink: 0;
         }
-        
+
         .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-        
+
         .avatar img:hover {
             transform: scale(1.05);
         }
-        
+
         .profile-info {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-        
+
         .profile-info h1 {
             font-size: 2.2rem;
             margin-bottom: 10px;
         }
-        
+
         .profile-info .username {
             font-weight: bold;
             color: #fff;
             font-size: 1.2rem;
             margin-bottom: 15px;
         }
-        
+
         .profile-info p {
             margin-bottom: 20px;
             max-width: 500px;
         }
-        
+
         /* 时钟样式 */
         .clock-container {
             display: flex;
@@ -383,7 +389,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 215, 0, 0.2);
         }
-        
+
         .clock-title {
             font-size: 1.2rem;
             margin-bottom: 15px;
@@ -391,21 +397,21 @@
             text-align: center;
             font-weight: bold;
         }
-        
+
         .clock {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
         }
-        
+
         .date-display {
             font-size: 1.1rem;
             margin-bottom: 15px;
             color: #ddd;
             text-align: center;
         }
-        
+
         .time-display {
             display: flex;
             justify-content: center;
@@ -422,46 +428,47 @@
             font-family: 'Courier New', monospace;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
-        
+
         .time-segment {
             display: inline-block;
             min-width: 40px;
             text-align: center;
         }
-        
+
         .time-separator {
             margin: 0 5px;
             animation: blink 1s infinite;
         }
-        
+
         @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0.3; }
         }
-        
+
         .timezone {
             margin-top: 10px;
             font-size: 0.9rem;
             color: #aaa;
             text-align: center;
         }
-        
+
+        /* 标签样式 */
         .tags-section {
             margin-top: 20px;
         }
-        
+
         .tags-title {
             font-size: 1.2rem;
             margin-bottom: 15px;
             color: #ddd;
         }
-        
+
         .tags-container {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .tag {
             background: rgba(255, 215, 0, 0.2);
             padding: 6px 12px;
@@ -471,12 +478,13 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
             cursor: pointer;
         }
-        
+
         .tag:hover {
             background: rgba(255, 215, 0, 0.4);
             transform: translateY(-2px);
         }
-        
+
+        /* 博客内容区域样式 */
         .blog-section {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -485,23 +493,23 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             margin-bottom: 50px;
         }
-        
+
         .section-title {
             font-size: 1.5rem;
             margin-bottom: 25px;
             padding-bottom: 10px;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .blog-content {
             color: #ddd;
             line-height: 1.8;
         }
-        
+
         .blog-content p {
             margin-bottom: 20px;
         }
-        
+
         .blog-content h3 {
             color: #fff;
             margin: 25px 0 15px;
@@ -509,7 +517,7 @@
             border-left: 4px solid #FFD700;
             padding-left: 15px;
         }
-        
+
         .blog-content blockquote {
             border-left: 4px solid #FFD700;
             padding-left: 20px;
@@ -517,28 +525,29 @@
             font-style: italic;
             color: #bbb;
         }
-        
+
         .theme-summary {
             margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .theme-summary:last-child {
             border-bottom: none;
         }
-        
+
         .theme-title {
             color: #fff;
             font-size: 1.4rem;
             margin-bottom: 15px;
         }
-        
+
         .theme-core {
             font-weight: bold;
             color: #FFD700;
         }
-        
+
+        /* 随笔区域样式 */
         .essay-section {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -547,12 +556,12 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             margin-bottom: 50px;
         }
-        
+
         .search-box {
             position: relative;
             margin-bottom: 20px;
         }
-        
+
         .search-box input {
             width: 100%;
             padding: 12px 45px 12px 15px;
@@ -562,7 +571,7 @@
             color: #fff;
             font-size: 1rem;
         }
-        
+
         .search-box i {
             position: absolute;
             right: 15px;
@@ -570,44 +579,44 @@
             transform: translateY(-50%);
             color: #aaa;
         }
-        
+
         .stats-panel {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        
+
         .stats-panel h3 {
             margin-bottom: 15px;
             color: #FFD700;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
         }
-        
+
         .stat-item {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 8px;
             text-align: center;
         }
-        
+
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
             color: #FFD700;
             margin-bottom: 5px;
         }
-        
+
         .stat-label {
             font-size: 0.9rem;
             color: #aaa;
         }
-        
+
         .draft-notice {
             background: rgba(255, 215, 0, 0.1);
             border: 1px solid rgba(255, 215, 0, 0.3);
@@ -618,28 +627,28 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .draft-notice span {
             color: #FFD700;
         }
-        
+
         .login-form {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             color: #ddd;
         }
-        
+
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 10px;
@@ -648,12 +657,12 @@
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
-        
+
         .form-group textarea {
             min-height: 120px;
             resize: vertical;
         }
-        
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -662,37 +671,37 @@
             transition: all 0.3s;
             font-weight: bold;
         }
-        
+
         .btn-primary {
             background: #FFD700;
             color: #333;
         }
-        
+
         .btn-primary:hover {
             background: #ffed4a;
             transform: translateY(-2px);
         }
-        
+
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
-        
+
         .btn-small {
             padding: 6px 12px;
             font-size: 0.85rem;
         }
-        
+
         .btn-group {
             display: flex;
             gap: 10px;
         }
-        
+
         .essay-form {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
@@ -700,44 +709,44 @@
             margin-bottom: 20px;
             display: none;
         }
-        
+
         .essay-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 15px;
         }
-        
+
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .checkbox-group input {
             width: auto;
         }
-        
+
         .media-preview {
             margin: 15px 0;
             display: none;
         }
-        
+
         .media-preview img, .media-preview video {
             max-width: 100%;
             max-height: 300px;
             border-radius: 8px;
             transition: transform 0.3s ease;
         }
-        
+
         .media-preview img:hover {
             transform: scale(1.02);
         }
-        
+
         .essay-list {
             margin-top: 30px;
         }
-        
+
         .essay-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
@@ -746,16 +755,16 @@
             position: relative;
             transition: transform 0.3s ease;
         }
-        
+
         .essay-item:hover {
             transform: translateY(-3px);
         }
-        
+
         .essay-item.pinned {
             border-left: 4px solid #FFD700;
             background: rgba(255, 215, 0, 0.05);
         }
-        
+
         .pinned-badge {
             position: absolute;
             top: 10px;
@@ -767,7 +776,7 @@
             font-size: 0.8rem;
             font-weight: bold;
         }
-        
+
         .category-badge {
             display: inline-block;
             background: rgba(0, 161, 214, 0.2);
@@ -777,46 +786,46 @@
             font-size: 0.8rem;
             margin-bottom: 10px;
         }
-        
+
         .essay-item h4 {
             color: #FFD700;
             margin-bottom: 10px;
             padding-right: 80px;
         }
-        
+
         .essay-item .essay-date {
             color: #aaa;
             font-size: 0.9rem;
             margin-bottom: 10px;
         }
-        
+
         .essay-item .essay-content {
             color: #ddd;
             line-height: 1.6;
             margin-bottom: 15px;
         }
-        
+
         .essay-media {
             margin: 15px 0;
         }
-        
+
         .essay-media img, .essay-media video {
             max-width: 100%;
             max-height: 400px;
             border-radius: 8px;
             transition: transform 0.3s ease;
         }
-        
+
         .essay-media img:hover {
             transform: scale(1.02);
         }
-        
+
         .essay-actions {
             display: flex;
             gap: 15px;
             margin-top: 15px;
         }
-        
+
         .essay-action {
             display: flex;
             align-items: center;
@@ -825,17 +834,17 @@
             cursor: pointer;
             transition: color 0.3s;
         }
-        
+
         .essay-action:hover {
             color: #FFD700;
         }
-        
+
         .share-buttons {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-        
+
         .share-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
@@ -846,53 +855,54 @@
             font-size: 0.8rem;
             transition: all 0.3s;
         }
-        
+
         .share-btn:hover {
             background: rgba(255, 255, 255, 0.2);
         }
-        
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
         }
-        
+
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             overflow: hidden;
         }
-        
+
         .user-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .user-name {
             font-weight: bold;
         }
-        
+
         .admin-tools {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        
+
         .admin-tools h3 {
             margin-bottom: 10px;
             color: #FFD700;
         }
-        
+
         .tool-buttons {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
         }
-        
+
+        /* 页脚样式 */
         footer {
             text-align: center;
             padding: 30px 0;
@@ -901,13 +911,14 @@
             color: #aaa;
             font-size: 0.9rem;
         }
-        
+
         .visitor-stats {
             margin-top: 10px;
             font-size: 0.8rem;
             color: #888;
         }
-        
+
+        /* 响应式设计 */
         @media (max-width: 768px) {
             .profile-section {
                 flex-direction: column;
@@ -1000,13 +1011,13 @@
                 max-width: 180px;
             }
         }
-        
+
         @media (min-width: 769px) {
             .mobile-nav-links {
                 display: none !important;
             }
         }
-        
+
         /* 针对非常小的屏幕优化 */
         @media (max-width: 480px) {
             .skip-btn {
@@ -1038,12 +1049,12 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- 开场动画 -->
     <div id="loading-screen">
         <div class="loading-content">
-            <!-- 移除视频自动播放，改为用户交互后播放 -->
             <video muted playsinline id="opening-video">
                 <source src="opening-animation.mp4" type="video/mp4">
                 您的浏览器不支持视频播放
@@ -1053,7 +1064,6 @@
                 <div class="loading-text">风也曾辉煌过</div>
                 <div class="loading-subtext">与你的日常，就是奇迹</div>
                 <button class="skip-btn" id="skip-btn">跳过开场</button>
-                <!-- 添加播放按钮 -->
                 <button class="play-btn" id="play-btn">播放动画</button>
             </div>
         </div>
@@ -1073,6 +1083,7 @@
     </div>
     
     <div class="container" id="main-content">
+        <!-- 导航栏 -->
         <nav>
             <div class="logo">
                 <i class="fas fa-blog"></i>
@@ -1083,7 +1094,6 @@
                 <a href="#">首页</a>
                 <a href="mailto:3553074358@qq.com">QQ邮箱</a>
                 <a href="https://space.bilibili.com/3546389980121532?spm_id_from=333.1007.0.0" target="_blank">Bilibili</a>
-                <a href="live2d.html">Live2D形象</a> <!-- 新增Live2D链接 -->
                 <a href="#">关于</a>
             </div>
             
@@ -1092,14 +1102,15 @@
             </button>
         </nav>
         
+        <!-- 移动端导航栏 -->
         <div class="mobile-nav-links" id="mobile-nav-links">
             <a href="#">首页</a>
             <a href="mailto:3553074358@qq.com">QQ邮箱</a>
             <a href="https://space.bilibili.com/3546389980121532?spm_id_from=333.1007.0.0" target="_blank">Bilibili</a>
-            <a href="live2d.html">Live2D形象</a> <!-- 新增Live2D链接 -->
             <a href="#">关于</a>
         </div>
         
+        <!-- 个人资料区域 -->
         <section class="profile-section">
             <div class="avatar" id="avatar-container">
                 <!-- 头像将由JavaScript动态加载 -->
@@ -1144,6 +1155,7 @@
             </div>
         </section>
         
+        <!-- 个人经验区域 -->
         <section class="blog-section">
             <h2 class="section-title">个人经验</h2>
             <div class="blog-content">
@@ -1292,6 +1304,7 @@
             </div>
         </section>
         
+        <!-- 页脚 -->
         <footer>
             <p>© 2023 风也曾辉煌过的个人博客 | 记录生活，分享感悟</p>
             <div class="visitor-stats" id="visitor-stats">
@@ -1300,7 +1313,10 @@
         </footer>
     </div>
 
+    <!-- JavaScript代码 -->
     <script>
+        // 主入口文件 - 负责初始化页面和协调各个模块
+        
         // 开场动画控制
         function startOpeningAnimation() {
             const loadingScreen = document.getElementById('loading-screen');
